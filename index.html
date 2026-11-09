@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101411">
+<title>MarketPilot</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#101411;--panel:#191f1b;--panel2:#202923;--line:#2a352e;
+  --green:#48d597;--green2:#2da979;--text:#f1f5f2;--muted:#8b9990;
+  --red:#ff6b72;--yellow:#eabf65;--radius:19px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;padding-bottom:100px}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+#app{max-width:560px;margin:auto;min-height:100vh}
+.top{padding:22px 19px 13px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#54e2a3,#16865c);display:grid;place-items:center;color:#07180f;font-size:20px;font-weight:900}
+.brand-name{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;border:1px solid var(--line)}
+main{padding:8px 16px 25px}
+.page{display:none;animation:fade .22s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:25px;letter-spacing:-.7px;margin:10px 0 5px}
+h2{font-size:17px;margin:0 0 13px}
+h3{font-size:14px;margin:0 0 6px}
+.sub{color:var(--muted);font-size:12px;line-height:1.5}
+.section{margin-top:23px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:11px}
+.hero{background:linear-gradient(135deg,#193a2b,#17251d 70%);border:1px solid #28533e;border-radius:23px;padding:20px;margin:17px 0}
+.hero .big{font-size:29px;font-weight:800;margin:8px 0}
+.hero p{color:#b6d3c3;margin:0;font-size:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px}
+.stat strong{font-size:23px;display:block;margin:7px 0 3px}
+.stat span{font-size:11px;color:var(--muted)}
+.icon{width:39px;height:39px;display:grid;place-items:center;background:#25342b;border-radius:13px;font-size:19px;flex-shrink:0}
+.btn{border:0;border-radius:13px;padding:12px 15px;background:var(--green);color:#082015;font-weight:750}
+.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:#47262a;color:#ff9da1}
+.btn.small{padding:8px 11px;font-size:12px}
+.btn.full{width:100%;margin-top:10px}
+.list-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.list-item:last-child{border-bottom:0}
+.list-item .info{flex:1;min-width:0}
+.list-item p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.4}
+.switch{position:relative;width:46px;height:27px;background:#354139;border-radius:30px;flex-shrink:0;transition:.2s}
+.switch:after{content:"";position:absolute;width:21px;height:21px;border-radius:50%;background:white;top:3px;left:3px;transition:.2s}
+.switch.on{background:var(--green2)}
+.switch.on:after{left:22px}
+.field{margin:13px 0}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;background:#111814;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}
+.field textarea{min-height:85px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--green2)}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#25372c;color:var(--green);font-size:10px;font-weight:700}
+.tag.gray{background:#29302b;color:#aeb9b1}
+.tag.yellow{background:#403722;color:var(--yellow)}
+.tag.red{background:#42282b;color:#ff969b}
+.progress{height:7px;background:#303a33;border-radius:10px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:var(--green);border-radius:10px}
+.nav{position:fixed;z-index:10;bottom:0;left:0;right:0;background:rgba(17,22,19,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:9px 5px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;max-width:560px;margin:auto}
+.nav button{border:0;background:none;color:var(--muted);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:58px}
+.nav button b{font-size:19px;font-weight:400}
+.nav button.active{color:var(--green)}
+.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.module{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:14px;min-height:115px;text-align:left;color:var(--text)}
+.module .icon{margin-bottom:10px}
+.module p{font-size:11px;color:var(--muted);margin:5px 0 0;line-height:1.4}
+.back{border:0;background:none;color:var(--green);padding:9px 0;font-weight:700}
+.empty{text-align:center;padding:25px 12px;color:var(--muted);font-size:12px}
+.bottom-note{font-size:10px;color:var(--muted);text-align:center;margin:18px 0}
+.modal-bg{display:none;position:fixed;inset:0;background:#0009;z-index:30;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{width:100%;max-width:560px;background:#1a211c;border:1px solid var(--line);border-radius:23px 23px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;animation:rise .2s ease}
+@keyframes rise{from{transform:translateY(50px)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.close{background:var(--panel2);border:0;color:white;border-radius:10px;width:32px;height:32px}
+.toast{position:fixed;z-index:50;bottom:95px;left:50%;transform:translate(-50%,20px);background:#26382d;border:1px solid #3a6349;color:#d9ffea;padding:12px 17px;border-radius:13px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;font-size:12px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.bar-chart{height:110px;display:flex;align-items:end;gap:8px;padding-top:12px}
+.bar-chart div{flex:1;background:linear-gradient(#48d597,#247b56);border-radius:6px 6px 2px 2px;min-height:5px;position:relative}
+.bar-chart span{position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted)}
+@media(min-width:500px){main{padding-left:22px;padding-right:22px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top">
+ <div class="brand"><div class="logo">M</div><div><div class="brand-name">MarketPilot</div><div class="brand-sub">Управление сообществами</div></div></div>
+ <div class="avatar">👤</div>
+</header>
+<main>
+<section class="page active" id="home">
+ <h1>Главная</h1><div class="sub">Всё управление сообществами в одном месте</div>
+ <div class="hero"><span class="tag">MARKETPILOT PROTOTYPE</span><div class="big">Твой порядок.<br>Твои правила.</div><p>Автоматизируй рутину и управляй Telegram-сообществами.</p><button class="btn" style="margin-top:17px" onclick="go('communities')">Мои сообщества →</button></div>
+ <div class="grid">
+  <div class="stat"><span>Сообщества</span><strong id="homeCommunities">0</strong><span>Добавлено в приложение</span></div>
+  <div class="stat"><span>Активные модули</span><strong id="homeModules">0</strong><span>Включено в настройках</span></div>
+  <div class="stat"><span>Шаблоны</span><strong id="homeTemplates">0</strong><span>Сохранено локально</span></div>
+  <div class="stat"><span>Запланировано</span><strong id="homePosts">0</strong><span>Черновики публикаций</span></div>
+ </div>
+ <div class="section"><div class="row"><h2>Быстрый доступ</h2><button class="back" onclick="go('tools')">Все модули →</button></div>
+  <div class="module-grid" id="quickModules"></div>
+ </div>
+ <div class="section"><h2>Последние действия</h2><div class="card" id="activityList"><div class="empty">Пока нет действий. Начни с добавления сообщества.</div></div></div>
+</section>
+
+<section class="page" id="communities">
+ <h1>Сообщества</h1><div class="sub">Группы и каналы, которыми ты управляешь</div>
+ <div class="row section"><h2>Мои сообщества</h2><button class="btn small" onclick="openCommunity()">＋ Добавить</button></div>
+ <div id="communityList"></div>
+ <div class="card section"><h3>Как подключить Telegram?</h3><p class="sub">Добавь бота MarketPilot в администраторы группы или канала и выдай необходимые разрешения. Реальное подключение появится после настройки серверной части.</p><button class="btn secondary full" onclick="toast('Подключение Telegram будет доступно после настройки бота и сервера')">Подключить Telegram</button></div>
+</section>
+
+<section class="page" id="tools">
+ <h1>Инструменты</h1><div class="sub">Модули автоматизации MarketPilot</div>
+ <div class="section"><div class="module-grid" id="allModules"></div></div>
+</section>
+
+<section class="page" id="analytics">
+ <h1>Аналитика</h1><div class="sub">Обзор показателей твоих сообществ</div>
+ <div class="grid section">
+  <div class="stat"><span>Сообщества</span><strong id="anCommunities">0</strong></div>
+  <div class="stat"><span>Шаблоны</span><strong id="anTemplates">0</strong></div>
+  <div class="stat"><span>Автоответы</span><strong id="anReplies">0</strong></div>
+  <div class="stat"><span>Посты в планировщике</span><strong id="anPosts">0</strong></div>
+ </div>
+ <div class="card section"><div class="row"><h3>Активность за неделю</h3><span class="tag gray">Демо</span></div><div class="bar-chart"><div style="height:35%"><span>Пн</span></div><div style="height:62%"><span>Вт</span></div><div style="height:48%"><span>Ср</span></div><div style="height:83%"><span>Чт</span></div><div style="height:55%"><span>Пт</span></div><div style="height:95%"><span>Сб</span></div><div style="height:70%"><span>Вс</span></div></div><p class="sub" style="margin-top:28px">График демонстрационный. Реальная статистика появится после подключения Telegram API и сервера.</p></div>
+ <div class="card"><h3>Статистика пользователей</h3><p class="sub">В будущем здесь будут отображаться динамика участников, активность, публикации и другие доступные Telegram показатели.</p></div>
+ <div class="card"><h3>Экспорт данных</h3><p class="sub">Сформируй локальный JSON-файл с настройками приложения.</p><button class="btn secondary full" onclick="exportData()">Экспортировать данные</button></div>
+</section>
+
+<section class="page" id="profile">
+ <h1>Профиль</h1><div class="sub">Аккаунт и настройки MarketPilot</div>
+ <div class="card section"><div class="row"><div class="row"><div class="avatar" style="width:48px;height:48px">👤</div><div><h3 id="profileName">Пользователь</h3><div class="sub">Telegram Mini App</div></div></div><span class="tag">FREE</span></div></div>
+ <div class="card"><div class="row"><div><h3>Тариф Free</h3><p class="sub">Базовые возможности приложения</p></div><span class="tag gray">Активен</span></div><div class="progress"><i style="width:25%"></i></div><p class="sub">Тарифы Pro и Premium будут подключены позднее.</p><button class="btn full" onclick="toast('Тарифы появятся после запуска платежной системы')">Посмотреть тарифы</button></div>
+ <div class="card">
+  <div class="list-item"><div class="icon">🔔</div><div class="info"><h3>Уведомления</h3><p>Системные уведомления приложения</p></div><div class="switch on" data-setting="notifications"></div></div>
+  <div class="list-item"><div class="icon">🌙</div><div class="info"><h3>Тёмная тема</h3><p>Интерфейс в тёмном оформлении</p></div><div class="switch on" data-setting="darkMode"></div></div>
+  <div class="list-item"><div class="icon">🛟</div><div class="info"><h3>Поддержка</h3><p>Связь с командой MarketPilot</p></div><button class="btn secondary small" onclick="toast('Контакты поддержки будут добавлены')">Открыть</button></div>
+ </div>
+ <div class="card"><h3>О приложении</h3><p class="sub">MarketPilot · Версия 1.0 prototype</p><p class="sub">Управление Telegram-группами и каналами.</p></div>
+ <button class="btn secondary full" onclick="resetData()">Сбросить локальные данные</button>
+</section>
+
+<section class="page" id="modulePage">
+ <button class="back" onclick="go('tools')">← Все инструменты</button>
+ <div id="moduleContent"></div>
+</section>
+</main>
+<nav class="nav">
+ <button class="active" data-page="home" onclick="go('home')"><b>⌂</b>Главная</button>
+ <button data-page="communities" onclick="go('communities')"><b>◉</b>Сообщества</button>
+ <button data-page="tools" onclick="go('tools')"><b>▦</b>Инструменты</button>
+ <button data-page="analytics" onclick="go('analytics')"><b>▥</b>Аналитика</button>
+ <button data-page="profile" onclick="go('profile')"><b>♙</b>Профиль</button>
+</nav>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Добавить</h2><button class="close" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const modules=[
+{id:'moderator',name:'Smart Moderator',icon:'🛡️',desc:'Автоматическая модерация сообщений',group:'Группы',fields:[['Удалять сообщения со ссылками','links',true],['Фильтр нецензурной лексики','profanity',false],['Защита от флуда','flood',true],['Проверка новых участников','newUsers',false]],extra:'Настрой правила, по которым бот будет обрабатывать сообщения участников.'},
+{id:'scam',name:'Anti-Scam',icon:'🚫',desc:'Защита от спама и мошеннических ссылок',group:'Группы',fields:[['Блокировать подозрительные ссылки','badLinks',true],['Фильтр рекламного спама','spam',true],['Проверять сообщения новых аккаунтов','newAccounts',false]],extra:'Настрой фильтрацию нежелательных ссылок и подозрительных сообщений.'},
+{id:'limits',name:'Publication Limits',icon:'📏',desc:'Лимиты публикаций для участников',group:'Группы',fields:[['Включить лимиты публикаций','enabled',true],['Отдельные лимиты для категорий','categories',true]],extra:'Пример: частные объявления — 2 публикации в день, услуги и вакансии — 1.'},
+{id:'templates',name:'Smart Templates',icon:'🧩',desc:'Шаблоны оформления публикаций',group:'Каналы',special:'templates'},
+{id:'autoreply',name:'AutoReply',icon:'💬',desc:'Автоматические ответы на сообщения',group:'Каналы',special:'autoreply'},
+{id:'scheduler',name:'Post Scheduler',icon:'🗓️',desc:'Планирование публикаций',group:'Каналы',special:'scheduler'},
+{id:'analytics',name:'Market Analytics',icon:'📊',desc:'Анализ активности и статистики',group:'Общее',fields:[['Собирать доступную статистику','collect',true],['Еженедельная сводка','weekly',true]],extra:'Показатели зависят от данных, которые разрешает получать Telegram.'},
+{id:'autoclean',name:'AutoClean',icon:'🧹',desc:'Инструменты очистки сообщества',group:'Группы',fields:[['Удалять сообщения по правилам','cleanMessages',false],['Удалять сообщения с рекламой','adMessages',false]],extra:'Не все данные об активности участников доступны через Telegram Bot API. Автоматическое определение неактивных подписчиков может быть ограничено.'},
+{id:'ads',name:'AdManager',icon:'📢',desc:'Управление рекламными публикациями',group:'Каналы',fields:[['Включить управление рекламой','enabled',false],['Сохранять историю размещений','history',true]],extra:'Управляй рекламными размещениями и веди историю публикаций.'},
+{id:'premium',name:'Premium Manager',icon:'💎',desc:'Тарифы, подписки и доступы',group:'Общее',fields:[['Включить учёт подписок','subscriptions',false],['Уведомлять об окончании доступа','notify',false]],extra:'Управление платными ролями и подписками будет подключено через сервер.'},
+{id:'export',name:'Export',icon:'📤',desc:'Экспорт данных и статистики',group:'Общее',special:'export'}
+];
+const defaults={communities:[],templates:[],replies:[],posts:[],settings:{notifications:true,darkMode:true},modules:{}};
+let state;
+try{state={...defaults,...JSON.parse(localStorage.getItem('mp_data')||'{}')};state.settings={...defaults.settings,...state.settings};state.modules=state.modules||{};state.communities=state.communities||[];state.templates=state.templates||[];state.replies=state.replies||[];state.posts=state.posts||[]}catch(e){state=structuredClone(defaults)}
+function save(){localStorage.setItem('mp_data',JSON.stringify(state));refresh()}
+function toast(msg){let el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+function go(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(page).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));refresh();window.scrollTo(0,0)}
+function openModal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;document.getElementById('modalBg').classList.add('show')}
+function closeModal(){document.getElementById('modalBg').classList.remove('show')}
+function activeCount(){return Object.values(state.modules).filter(x=>x&&x.enabled).length}
+function moduleCard(m){return `<button class="module" onclick="openModule('${m.id}')"><div class="icon">${m.icon}</div><h3>${m.name}</h3><p>${m.desc}</p></button>`}
+function refresh(){
+ document.getElementById('homeCommunities').textContent=state.communities.length;
+ document.getElementById('homeModules').textContent=activeCount();
+ document.getElementById('homeTemplates').textContent=state.templates.length;
+ document.getElementById('homePosts').textContent=state.posts.length;
+ document.getElementById('anCommunities').textContent=state.communities.length;
+ document.getElementById('anTemplates').textContent=state.templates.length;
+ document.getElementById('anReplies').textContent=state.replies.length;
+ document.getElementById('anPosts').textContent=state.posts.length;
+ document.getElementById('quickModules').innerHTML=modules.slice(0,4).map(moduleCard).join('');
+ document.getElementById('allModules').innerHTML=modules.map(moduleCard).join('');
+ renderCommunities();renderActivity();
+ document.querySelectorAll('[data-setting]').forEach(el=>el.classList.toggle('on',!!state.settings[el.dataset.setting]));
+}
+function renderCommunities(){
+ let el=document.getElementById('communityList');
+ if(!state.communities.length){el.innerHTML='<div class="card empty">Здесь пока пусто.<br>Добавь первую группу или канал.</div>';return}
+ el.innerHTML=state.communities.map((c,i)=>`<div class="card"><div class="row"><div class="row"><div class="icon">${c.type==='Канал'?'📣':'👥'}</div><div><h3>${esc(c.name)}</h3><p class="sub">${c.type} · ${esc(c.username||'Без username')}</p></div></div><button class="btn secondary small" onclick="deleteCommunity(${i})">Удалить</button></div><div style="margin-top:12px"><span class="tag yellow">Ожидает подключения</span></div></div>`).join('');
+}
+function renderActivity(){let el=document.getElementById('activityList');let items=[];if(state.communities.length)items.push('Добавлено сообществ: '+state.communities.length);if(state.templates.length)items.push('Сохранено шаблонов: '+state.templates.length);if(state.posts.length)items.push('Черновиков публикаций: '+state.posts.length);el.innerHTML=items.length?items.map(x=>`<div class="list-item"><div class="icon">✓</div><div class="info">${x}</div></div>`).join(''):'<div class="empty">Пока нет действий. Начни с добавления сообщества.</div>'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function openCommunity(){openModal('Добавить сообщество',`<div class="field"><label>Название</label><input id="cName" placeholder="Например, Барахолка"></div><div class="field"><label>Тип сообщества</label><select id="cType"><option>Группа</option><option>Канал</option></select></div><div class="field"><label>Username или ссылка (необязательно)</label><input id="cUser" placeholder="@mycommunity"></div><button class="btn full" onclick="addCommunity()">Сохранить сообщество</button><p class="sub">Это локальная запись. Для реального подключения потребуется добавить бота в администраторы.</p>`)}
+function addCommunity(){let name=document.getElementById('cName').value.trim();if(!name){toast('Введи название');return}state.communities.push({name,type:document.getElementById('cType').value,username:document.getElementById('cUser').value.trim()});save();closeModal();toast('Сообщество добавлено')}
+function deleteCommunity(i){if(!confirm('Удалить это сообщество из приложения?'))return;state.communities.splice(i,1);save();toast('Удалено')}
+function openModule(id){let m=modules.find(x=>x.id===id);if(!m)return;go('modulePage');let cfg=state.modules[id]||{};let html=`<h1>${m.icon} ${m.name}</h1><p class="sub">${m.desc}</p><div class="card section"><div class="row"><div><h3>Состояние модуля</h3><p class="sub">Локальная настройка</p></div><div class="switch ${cfg.enabled?'on':''}" onclick="toggleModule('${id}',this)"></div></div><p class="sub" style="margin-top:12px">Включение сохраняет настройку в приложении, но не запускает Telegram-бота без серверной интеграции.</p></div>`;
+ if(m.special==='templates')html+=templatesUI();
+ else if(m.special==='autoreply')html+=repliesUI();
+ else if(m.special==='scheduler')html+=schedulerUI();
+ else if(m.special==='export')html+=`<div class="card section"><h3>Экспорт данных</h3><p class="sub">Скачай резервную копию локальных настроек MarketPilot.</p><button class="btn full" onclick="exportData()">Скачать JSON</button></div>`;
+ else{html+=`<div class="card section"><h3>Правила и параметры</h3>`+(m.fields||[]).map(f=>`<div class="list-item"><div class="info"><h3>${f[0]}</h3></div><div class="switch ${(cfg[f[1]]??f[2])?'on':''}" onclick="toggleField('${id}','${f[1]}',this)"></div></div>`).join('')+`</div><div class="card"><h3>Дополнительная информация</h3><p class="sub">${m.extra||''}</p></div>`}
+ html+=`<div class="bottom-note">Настройки сохраняются на этом устройстве · Демо-режим</div>`;
+ document.getElementById('moduleContent').innerHTML=html;
+}
+function toggleModule(id,el){let cfg=state.modules[id]||{};cfg.enabled=!cfg.enabled;state.modules[id]=cfg;el.classList.toggle('on',cfg.enabled);save();toast(cfg.enabled?'Модуль включён в настройках':'Модуль выключен')}
+function toggleField(id,key,el){let cfg=state.modules[id]||{};cfg[key]=!(cfg[key]??false);state.modules[id]=cfg;el.classList.toggle('on',cfg[key]);save();toast('Настройка сохранена')}
+function templatesUI(){return `<div class="section row"><h2>Мои шаблоны</h2><button class="btn small" onclick="templateForm()">＋ Создать</button></div><div id="templateList">${templateList()}</div><div class="card"><h3>Как это будет работать</h3><p class="sub">После подключения бота можно будет отправлять ему текст или медиа, выбирать шаблон и публиковать оформленный пост в выбранный канал. Автопубликация потребует серверной настройки.</p></div>`}
+function templateList(){if(!state.templates.length)return '<div class="card empty">Шаблонов пока нет.</div>';return state.templates.map((t,i)=>`<div class="card"><div class="row"><h3>${esc(t.name)}</h3><div><button class="btn secondary small" onclick="templateForm(${i})">Изменить</button> <button class="btn danger small" onclick="deleteItem('templates',${i})">✕</button></div></div><p class="sub">${esc(t.text)}</p>${t.default?'<span class="tag">По умолчанию</span>':''}</div>`).join('')}
+function templateForm(i=-1){let t=state.templates[i]||{name:'',text:'',default:false};openModal(i<0?'Новый шаблон':'Изменить шаблон',`<div class="field"><label>Название</label><input id="tName" value="${esc(t.name)}" placeholder="Например, Продажа"></div><div class="field"><label>Текст шаблона</label><textarea id="tText" placeholder="Введите текст оформления">${esc(t.text)}</textarea></div><div class="field"><label><input type="checkbox" id="tDefault" ${t.default?'checked':''}> Шаблон по умолчанию</label></div><button class="btn full" onclick="saveTemplate(${i})">Сохранить</button>`)}
+function saveTemplate(i){let name=document.getElementById('tName').value.trim(),text=document.getElementById('tText').value.trim();if(!name||!text){toast('Заполни название и текст');return}let item={name,text,default:document.getElementById('tDefault').checked};if(item.default)state.templates.forEach(x=>x.default=false);if(i<0)state.templates.push(item);else state.templates[i]=item;save();closeModal();openModule('templates');toast('Шаблон сохранён')}
+function repliesUI(){return `<div class="section row"><h2>Правила автоответа</h2><button class="btn small" onclick="replyForm()">＋ Добавить</button></div><div id="replyList">${replyList()}</div><div class="card"><p class="sub">Автоответы будут срабатывать на сервере после подключения бота. Сейчас можно создавать и редактировать правила локально.</p></div>`}
+function replyList(){if(!state.replies.length)return '<div class="card empty">Правил автоответа пока нет.</div>';return state.replies.map((r,i)=>`<div class="card"><div class="row"><h3>${esc(r.trigger)}</h3><button class="btn danger small" onclick="deleteItem('replies',${i})">Удалить</button></div><p class="sub">${esc(r.answer)}</p><span class="tag">${r.enabled?'Включено':'Выключено'}</span></div>`).join('')}
+function replyForm(){openModal('Новое правило',`<div class="field"><label>Ключевое слово или фраза</label><input id="rTrigger" placeholder="Например, цена"></div><div class="field"><label>Ответ</label><textarea id="rAnswer" placeholder="Введите автоматический ответ"></textarea></div><button class="btn full" onclick="saveReply()">Сохранить правило</button>`)}
+function saveReply(){let trigger=document.getElementById('rTrigger').value.trim(),answer=document.getElementById('rAnswer').value.trim();if(!trigger||!answer){toast('Заполни оба поля');return}state.replies.push({trigger,answer,enabled:true});save();closeModal();openModule('autoreply');toast('Правило добавлено')}
+function schedulerUI(){return `<div class="section row"><h2>Публикации</h2><button class="btn small" onclick="postForm()">＋ Создать</button></div><div id="postList">${postList()}</div><div class="card"><p class="sub">Здесь можно готовить черновики публикаций и задавать время. Реальная отправка постов требует подключённого бота и сервера.</p></div>`}
+function postList(){if(!state.posts.length)return '<div class="card empty">Запланированных публикаций пока нет.</div>';return state.posts.map((p,i)=>`<div class="card"><div class="row"><h3>${esc(p.title)}</h3><button class="btn danger small" onclick="deleteItem('posts',${i})">Удалить</button></div><p class="sub">${esc(p.date)} · ${esc(p.time)}</p><p>${esc(p.text)}</p><span class="tag yellow">Черновик</span></div>`).join('')}
+function postForm(){openModal('Новая публикация',`<div class="field"><label>Название</label><input id="pTitle" placeholder="Название публикации"></div><div class="field"><label>Текст</label><textarea id="pText" placeholder="Текст поста"></textarea></div><div class="field"><label>Дата</label><input id="pDate" type="date"></div><div class="field"><label>Время</label><input id="pTime" type="time"></div><button class="btn full" onclick="savePost()">Сохранить черновик</button>`)}
+function savePost(){let title=document.getElementById('pTitle').value.trim(),text=document.getElementById('pText').value.trim(),date=document.getElementById('pDate').value,time=document.getElementById('pTime').value;if(!title||!text||!date||!time){toast('Заполни все поля');return}state.posts.push({title,text,date,time});save();closeModal();openModule('scheduler');toast('Черновик сохранён')}
+function deleteItem(type,i){if(!confirm('Удалить запись?'))return;state[type].splice(i,1);save();let id=type==='templates'?'templates':type==='replies'?'autoreply':'scheduler';openModule(id);toast('Удалено')}
+function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='marketpilot-backup.json';a.click();URL.revokeObjectURL(url);toast('Экспорт подготовлен')}
+function resetData(){if(!confirm('Удалить все локальные данные MarketPilot?'))return;localStorage.removeItem('mp_data');state=structuredClone(defaults);refresh();go('home');toast('Данные сброшены')}
+document.querySelectorAll('[data-setting]').forEach(el=>el.addEventListener('click',()=>{let k=el.dataset.setting;state.settings[k]=!state.settings[k];el.classList.toggle('on',state.settings[k]);save()}));
+if(window.Telegram?.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();try{let u=Telegram.WebApp.initDataUnsafe?.user;if(u){document.getElementById('profileName').textContent=u.first_name||'Пользователь';}}catch(e){}}
+refresh();
+</script>
+</body>
+</html>
